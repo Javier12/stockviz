@@ -76,27 +76,51 @@
         font-size: 12px;
         line-height: 20px;
       }
+
+      
+      .box {
+        font: 10px sans-serif;
+      }
+
+      .box line,
+      .box rect,
+      .box circle {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 1.5px;
+      }
+
+      .box .center {
+        stroke-dasharray: 3,3;
+      }
+
+      .box .outlier {
+        fill: none;
+        stroke: #ccc;
+      }
+
     </style>
 
 </head>
 <div id="tooltip" class="hidden">
         <p><span id="value"></p>
 </div>
-<!-- Plotly.js -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <!-- D3 -->
 <script src="http://d3js.org/d3.v3.min.js"></script>
-
-<div id="chart" style='overflow:auto;'></div>
-<div id="myDiv" style="width: 480px; height: 400px;">
+<script src="box.js"></script>
+<div>
+  <div id="chart" style='overflow:auto;display: table-cell'></div>
+  <div id="chartBox" style="display: table-cell">
+</div>
 
 <script type="text/javascript">
+// TODO BUG al ordenar por accion!
 var margin = { top: 150, right: 10, bottom: 50, left: 100 },
   cellSize=20;
   cellSizeX=cellSize*2.5;
   col_number=12;
   row_number=31;
-  width = cellSizeX*col_number*2, // - margin.left - margin.right,
+  width = cellSizeX*col_number*1.2, // - margin.left - margin.right,
   height = cellSize*row_number , // - margin.top - margin.bottom,
   //gridSize = Math.floor(width / 24),
   legendElementWidth = cellSizeX/2,
@@ -115,7 +139,12 @@ function(d) {
     row:   +d.row_idx,
     col:   +d.col_idx,
     value: +d.log2ratio,
-    dev:   +d.dev
+    dev:   +d.dev,
+    quartile0: +d.quartile0,
+    quartile25: +d.quartile25,
+    quartile50: +d.quartile50,
+    quartile75: +d.quartile75,
+    quartile100: +d.quartile100
   };
 },
 function(error, data) {
@@ -160,8 +189,7 @@ function(error, data) {
       .attr("class",  function (d,i) { return "colLabel mono c"+i;} )
       .on("mouseover", function(d) {d3.select(this).classed("text-hover",true);})
       .on("mouseout" , function(d) {d3.select(this).classed("text-hover",false);})
-      .on("click", function(d,i) {colSortOrder=!colSortOrder;  sortbylabel("c",i,colSortOrder);})
-      ;
+      .on("click", function(d,i) {colSortOrder=!colSortOrder;  sortbylabel("c",i,colSortOrder);});
 
   var heatMap = svg.append("g").attr("class","g3")
         .selectAll(".cellg")
@@ -202,8 +230,7 @@ function(error, data) {
                d3.selectAll(".rowLabel").classed("text-highlight",false);
                d3.selectAll(".colLabel").classed("text-highlight",false);
                d3.select("#tooltip").classed("hidden", true);
-        })
-        ;
+        });
 
   var legend = svg.selectAll(".legend")
       .data(['4%>','','','','','','','','','','0','','','','','','','','','<-4%'])
@@ -231,8 +258,7 @@ function(error, data) {
        d3.selectAll(".c"+rORc+i) 
          .filter(function(ce){
             log2r.push(ce.value);
-          })
-       ;
+          });
        if(rORc=="r"){ // sort log2ratio of a gene
          sorted=d3.range(col_number).sort(function(a,b){ if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
          t.selectAll(".cell")
@@ -349,7 +375,70 @@ function(error, data) {
              d3.selectAll(".rowLabel").classed("text-selected",false);
              d3.selectAll(".colLabel").classed("text-selected",false);
          }
-      })
-      ;
+      });
 });
+
+/**
+ * BOX
+ */
+
+
+var margin2 = {top: 10, right: 50, bottom: 20, left: 50},
+    width2 = 120 - margin2.left - margin2.right,
+    height2 = 500 - margin2.top - margin2.bottom;
+
+var min2 = Infinity,
+    max2 = -Infinity;
+
+var chart2 = d3.box()
+    .whiskers(iqr(1.5))
+    .quartiles(mqu(2))
+    .width(width2)
+    .height(height2);
+
+d3.csv("morley.csv", function(error, csv) {
+  if (error) throw error;
+
+  var data2 = [];
+
+  csv.forEach(function(x) {
+    var e = Math.floor(x.Expt - 1),
+        r = Math.floor(x.Run - 1),
+        s = Math.floor(x.Speed),
+        d = data2[e];
+    if (!d) d = data2[e] = [s];
+    else d.push(s);
+    if (s > max2) max2 = s;
+    if (s < min2) min2 = s;
+  });
+
+  chart2.domain([min2, max2]);
+
+  var svg2 = d3.select("#chartBox").append("svg")
+      .data(data2, function(d) { console.log("D: " + d); return d;})
+    .enter().append("svg")
+      .attr("class", "box")
+      .attr("width", width2 + margin2.left + margin2.right)
+      .attr("height", height2 + margin2.bottom + margin2.top)
+    .append("g")
+      .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+      .call(chart2);
+
+});
+
+
+
+// Returns a function to compute the interquartile range.
+function iqr(k) {
+  return function(d, i) {
+    return [800, 720];
+  };
+}
+
+function mqu(k) {
+  return function(d, i) {
+    return[749,750,751]
+  }
+}
+
 </script>
