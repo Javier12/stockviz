@@ -383,62 +383,69 @@ function(error, data) {
  */
 
 
-var margin2 = {top: 10, right: 50, bottom: 20, left: 50},
+var margin2 = {top: 200, right: 50, bottom: 20, left: 50},
     width2 = 120 - margin2.left - margin2.right,
-    height2 = 500 - margin2.top - margin2.bottom;
+    height2 = 700 - margin2.top - margin2.bottom;
 
 var min2 = Infinity,
     max2 = -Infinity;
 
 var chart2 = d3.box()
-    .whiskers(iqr(1.5))
-    .quartiles(mqu(2))
     .width(width2)
     .height(height2);
 
-d3.csv("morley.csv", function(error, csv) {
+d3.tsv("data_AESGENER.tsv", function(d) {
+  return {
+    "row": d.row_idx,
+    "col": d.col_idx,
+    "whiskerDown": d.quartile0,
+    "whiskerUp": d.quartile100,
+    "quantileDown": d.quartile25,
+    "quantileUp": d.quartile75,
+    "quantileMiddle": d.quartile50
+  }
+},
+  function(error, data) {
   if (error) throw error;
 
-  var data2 = [];
 
-  csv.forEach(function(x) {
-    var e = Math.floor(x.Expt - 1),
-        r = Math.floor(x.Run - 1),
-        s = Math.floor(x.Speed),
-        d = data2[e];
-    if (!d) d = data2[e] = [s];
-    else d.push(s);
-    if (s > max2) max2 = s;
-    if (s < min2) min2 = s;
-  });
 
-  chart2.domain([min2, max2]);
+  chart2.domain([-60, 60]);
 
-  var svg2 = d3.select("#chartBox").append("svg")
-      .data(data2, function(d) { console.log("D: " + d); return d;})
+
+  var svg2 = d3.select("#chartBox");
+
+      
+
+  var allBoxes = svg2.selectAll()
+      .data(data)
     .enter().append("svg")
       .attr("class", "box")
-      .attr("width", width2 + margin2.left + margin2.right)
-      .attr("height", height2 + margin2.bottom + margin2.top)
-    .append("g")
-      .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
+      .attr("width", 50)
+      .attr("height", height2 + margin.top + margin.bottom)
+      .attr("x", function(d) { return (d.col - 2) * 100; })
+      .append("g")
       .call(chart2);
+
+
+  
+
+
+  setInterval(function() {
+      svg2.datum({
+        "row": 1,
+        "col": 1,
+        "whiskerDown": -5,
+        "whiskerUp": 5,
+        "quantileDown": -2,
+        "quantileUp": 2,
+        "quantileMiddle": 0
+      }).call(chart2.duration(1000));
+  }, 2000);
+
 
 });
 
-
-
-// Returns a function to compute the interquartile range.
-function iqr(k) {
-  return function(d, i) {
-    return [800, 720];
-  };
-}
-
-function mqu(k) {
-  return function(d, i) {
-    return[749,750,751]
-  }
-}
+  
 
 </script>
