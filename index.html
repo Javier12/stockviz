@@ -430,56 +430,6 @@ d3.tsv("data_AESGENER.tsv", function(d) {
 
 
   
-
-/*
-  setInterval(function() {
-      svg2.datum({
-        "row": 1,
-        "col": 1,
-        "whiskerDown": -5,
-        "whiskerUp": 5,
-        "quantileDown": -2,
-        "quantileUp": 2,
-        "quantileMiddle": 0
-      }).call(chart2.duration(1000));
-  }, 2000);
-*/
-
-/*
-    setInterval(function() {
-    console.log("RELOAD");
-    d3.tsv("data_AGUAS.tsv", function(d) {
-    return {
-      "row": d.row_idx,
-      "col": d.col_idx,
-      "whiskerDown": d.quartile0,
-      "whiskerUp": d.quartile100,
-      "quantileDown": d.quartile25,
-      "quantileUp": d.quartile75,
-      "quantileMiddle": d.quartile50
-      }
-    },
-    function(error, data2) {
-      if (error) throw error;
-      console.log("TEST");
-      console.log(data2);
-      var all = d3.select("#chartBox").selectAll('svg');
-      console.log(all[0]);
-      var i = 0;
-      all[0].forEach(function(subelement) {
-        console.log("subelement")
-        console.log(subelement);
-        var d3sub = d3.select(subelement);
-        console.log(d3sub);
-        d3sub.attr("__data__", 1);
-        //d3sub.datum(data2[i]);
-        i++;
-      });
-      //svg2.datum(data2).call(chart2.duration(1000));
-      svg2.call(chart2.duration(1000));
-    })
-  }, 2000);
-*/
   setInterval(function() {
     console.log("hola");
     d3.tsv("data_AGUAS.tsv", function(d) {
@@ -496,7 +446,16 @@ d3.tsv("data_AESGENER.tsv", function(d) {
     function(error, data2) {
       if (error) throw error;
       console.log(data2);
-      svg2.datum(data2[0]).call(chart2.duration(1000))
+      console.log(svg2);
+      var all = d3.select("#chartBox").selectAll('svg');
+      var i = 0;
+      all[0].forEach(function(subelement) {
+        console.log(svg2);
+        console.log(subelement);
+        var d3s = d3.select(subelement);
+        d3s.datum(data2[i]).call(chart2.duration(1000))
+        i++;
+      })
     })
   }, 2000);
 
