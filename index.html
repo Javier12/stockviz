@@ -108,10 +108,13 @@
 <!-- D3 -->
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="box.js"></script>
+<div id="boxTitle" style="z-index: 1;display: table-cell;position: absolute; top: 40px; left: 1230px;font-family: Copperplate,Copperplate Gothic Light,fantasy;">AESGENER</div>
 <div>
   <div id="chart" style='overflow:auto;display: table-cell'></div>
-  <div id="chartBox" style="display: table-cell">
+  <div id="chartBox" style="display: table-cell"></div>
 </div>
+
+
 
 <script type="text/javascript">
 // TODO BUG al ordenar por accion!
@@ -441,6 +444,7 @@ d3.tsv("data_AESGENER.tsv", function(d) {
 
 function changeBoxes(stock) {
   // TODO cambiar dominio del grafico de boxes al minimo y maximo de los outliers
+  document.getElementById("boxTitle").innerHTML = stock;
   var svg2 = d3.select("#chartBox");
   d3.tsv("data_" + stock +".tsv", function(d) {
     return {
