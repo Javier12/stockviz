@@ -129,8 +129,8 @@ var margin = { top: 150, right: 10, bottom: 50, left: 100 },
   colorLegend = ['#005824','#1A693B','#347B53','#4F8D6B','#699F83','#83B09B','#9EC2B3','#B8D4CB','#D2E6E3','#EDF8FB','#FFFFFF','#FFE6E6','#FFCDCD','#FFB3B3','#FF9A9A','#FF8080','#FF6666','#FF4D4D','#FF3333','#F31818','#FF0000'];
   hcrow = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31], // change to gene name or probe id
   hccol = [1,2,3,4,5,6,7,8,9,10,11,12], // change to gene name or probe id
-  rowLabel = ['AESGENER','AGUAS/A','ANDINAB','ANTAR','BANMED','BCI','BSAN','CAP','CCU','CENCOSUD','CHILE','CMPC','COLBUN','CONCHA','COPEC','EMBONOB',
-            'ENELGXCH','ENERSIAM','ENTEL','FALAB','GASCO','ITAUCORP','LAN','PARAUCO','QUINENC','SALFACOR','SECUR','SMCHILEB','SQM/B','VAPORES','IPSA'], // change to gene name or probe id
+  rowLabel = ['AESGENER','AGUAS','ANDINAB','ANTAR','BANMED','BCI','BSAN','CAP','CCU','CENCOSUD','CHILE','CMPC','COLBUN','CONCHA','COPEC','EMBONOB',
+            'ENELGXCH','ENERSIAM','ENTEL','FALAB','GASCO','ITAUCORP','LAN','PARAUCO','QUINENC','SALFACOR','SECUR','SMCHILEB','SQM','VAPORES','IPSA'], // change to gene name or probe id
   colLabel = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre']; // change to contrast name
 
 d3.tsv("data_heatmap.tsv",
@@ -226,6 +226,7 @@ function(error, data) {
                d3.select("#tooltip").classed("hidden", false);
 
                // TODO Llamar a cambiar data de boxes
+               changeBoxes(rowLabel[d.row-1]);
         })
         .on("mouseout", function(){
                d3.select(this).classed("cell-hover",false);
@@ -384,6 +385,9 @@ function(error, data) {
  * BOX
  */
 
+// TODO annadir titulo
+// TODO annadir decimales
+// TODO annadir numeros en quartiles (Problema de espaciado)
 
 var margin2 = {top: 200, right: 50, bottom: 20, left: 50},
     width2 = 120 - margin2.left - margin2.right,
@@ -431,42 +435,12 @@ d3.tsv("data_AESGENER.tsv", function(d) {
       .call(chart2);
 
 
-/*  
-  setInterval(function() {
-    d3.tsv("data_AGUAS.tsv", function(d) {
-    return {
-      "row": d.row_idx,
-      "col": d.col_idx,
-      "whiskerDown": d.quartile0,
-      "whiskerUp": d.quartile100,
-      "quantileDown": d.quartile25,
-      "quantileUp": d.quartile75,
-      "quantileMiddle": d.quartile50
-      }
-    },
-    function(error, data2) {
-      if (error) throw error;
-      console.log(data2);
-      console.log(svg2);
-      var all = d3.select("#chartBox").selectAll('svg');
-      var i = 0;
-      all[0].forEach(function(subelement) {
-        console.log(svg2);
-        console.log(subelement);
-        var d3s = d3.select(subelement);
-        d3s.datum(data2[i]).call(chart2.duration(1000))
-        i++;
-      })
-    })
-  }, 2000);
-  */
-
-
-
 });
 
 
 function changeBoxes(stock) {
+  // TODO cambiar dominio del grafico de boxes al minimo y maximo de los outliers
+  var svg2 = d3.select("#chartBox");
   d3.tsv("data_" + stock +".tsv", function(d) {
     return {
       "row": d.row_idx,
