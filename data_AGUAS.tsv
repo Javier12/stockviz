@@ -1,4 +1,4 @@
-row_idx	col_idx	log2ratio	dev	quartile0	quartile25	quartile50	quartile75	quartile100
+row_idx	col_idx	average	dev	quartile0	quartile25	quartile50	quartile75	quartile100
 2	1	0.6460428571	5.543959306	-8.5762	-2.60325	0	3.8204	12.7168
 2	2	0.6326714286	4.253525542	-8.1592	-0.99555	0.4444	2.5593	9.7648
 2	3	-0.3083714286	4.316052565	-13.5838	-0.5069	0.1178	2.6575	5.714

@@ -138,7 +138,7 @@ function(d) {
   return {
     row:   +d.row_idx,
     col:   +d.col_idx,
-    value: +d.log2ratio,
+    value: +d.average,
     dev:   +d.dev,
     quartile0: +d.quartile0,
     quartile25: +d.quartile25,
@@ -224,6 +224,8 @@ function(error, data) {
                  .text("Accion: "+rowLabel[d.row-1]+" | "+colLabel[d.col-1]+"\nRetorno: "+d.value+"\nDesviacion: "+d.dev);  
                //Show the tooltip
                d3.select("#tooltip").classed("hidden", false);
+
+               // TODO Llamar a cambiar data de boxes
         })
         .on("mouseout", function(){
                d3.select(this).classed("cell-hover",false);
@@ -262,10 +264,10 @@ function(error, data) {
        if(rORc=="r"){ // sort log2ratio of a gene
          sorted=d3.range(col_number).sort(function(a,b){ if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
          t.selectAll(".cell")
-           .attr("x", function(d) { return sorted.indexOf(d.col-1) * cellSize; })
+           .attr("x", function(d) { return sorted.indexOf(d.col-1) * cellSizeX; })
            ;
          t.selectAll(".colLabel")
-          .attr("y", function (d, i) { return sorted.indexOf(i) * cellSize; })
+          .attr("y", function (d, i) { return sorted.indexOf(i) * cellSizeX; })
          ;
        }else{ // sort log2ratio of a contrast
          sorted=d3.range(row_number).sort(function(a,b){if(sortOrder){ return log2r[b]-log2r[a];}else{ return log2r[a]-log2r[b];}});
@@ -429,9 +431,8 @@ d3.tsv("data_AESGENER.tsv", function(d) {
       .call(chart2);
 
 
-  
+/*  
   setInterval(function() {
-    console.log("hola");
     d3.tsv("data_AGUAS.tsv", function(d) {
     return {
       "row": d.row_idx,
@@ -458,10 +459,40 @@ d3.tsv("data_AESGENER.tsv", function(d) {
       })
     })
   }, 2000);
+  */
 
 
 
 });
+
+
+function changeBoxes(stock) {
+  d3.tsv("data_" + stock +".tsv", function(d) {
+    return {
+      "row": d.row_idx,
+      "col": d.col_idx,
+      "whiskerDown": d.quartile0,
+      "whiskerUp": d.quartile100,
+      "quantileDown": d.quartile25,
+      "quantileUp": d.quartile75,
+      "quantileMiddle": d.quartile50
+      }
+    },
+    function(error, data2) {
+      if (error) throw error;
+      console.log(data2);
+      console.log(svg2);
+      var all = d3.select("#chartBox").selectAll('svg');
+      var i = 0;
+      all[0].forEach(function(subelement) {
+        console.log(svg2);
+        console.log(subelement);
+        var d3s = d3.select(subelement);
+        d3s.datum(data2[i]).call(chart2.duration(1000))
+        i++;
+      })
+    })
+}
 
   
 
