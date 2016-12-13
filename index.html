@@ -106,12 +106,18 @@
         <p><span id="value"></p>
 </div>
 <!-- D3 -->
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="d3v3min.js"></script>
 <script src="box.js"></script>
-<div id="boxTitle" style="z-index: 1;display: table-cell;position: absolute; top: 40px; left: 1230px;font-family: Copperplate,Copperplate Gothic Light,fantasy;">AESGENER</div>
+
 <div>
-  <div id="chart" style='overflow:auto;display: table-cell'></div>
-  <div id="chartBox" style="display: table-cell"></div>
+  <div style="font-family: Copperplate,Copperplate Gothic Light,fantasy;text-align: center;">
+    <h2>Retornos Promedio por Acción</h2>
+  </div>
+  <div id="chart" style='overflow:auto;margin: 0 auto;width: 750px'></div>
+  <div id="boxTitle" style="font-family: Copperplate,Copperplate Gothic Light,fantasy;text-align: center; margin-top: 35px">
+    AESGENER
+  </div>
+  <div id="chartBox" style="margin: 0 auto;width:850px"></div>
 </div>
 
 
@@ -123,7 +129,7 @@ var margin = { top: 150, right: 10, bottom: 50, left: 100 },
   cellSizeX=cellSize*2.5;
   col_number=12;
   row_number=31;
-  width = cellSizeX*col_number*1.2, // - margin.left - margin.right,
+  width = cellSizeX*col_number*1.0, // - margin.left - margin.right,
   height = cellSize*row_number , // - margin.top - margin.bottom,
   //gridSize = Math.floor(width / 24),
   legendElementWidth = cellSizeX/2,
@@ -387,8 +393,6 @@ function(error, data) {
 /**
  * BOX
  */
-
-// TODO annadir titulo
 // TODO annadir decimales
 
 var margin2 = {top: 200, right: 30, bottom: 20, left: 30},
@@ -418,8 +422,7 @@ d3.tsv("data_AESGENER.tsv", function(d) {
 
 
 
-
-  chart2.domain([-60, 60]);
+  chart2.domain([-36, 57]);
 
 
   var svg2 = d3.select("#chartBox");
@@ -443,7 +446,6 @@ d3.tsv("data_AESGENER.tsv", function(d) {
 
 
 function changeBoxes(stock) {
-  // TODO cambiar dominio del grafico de boxes al minimo y maximo de los outliers
   document.getElementById("boxTitle").innerHTML = stock;
   var svg2 = d3.select("#chartBox");
   d3.tsv("data_" + stock +".tsv", function(d) {
@@ -452,6 +454,8 @@ function changeBoxes(stock) {
       "col": d.col_idx,
       "whiskerDown": d.quartile0,
       "whiskerUp": d.quartile100,
+      "mmax": parseInt(d.quartile100),
+      "mmin": parseInt(d.quartile0),
       "quantileDown": d.quartile25,
       "quantileUp": d.quartile75,
       "quantileMiddle": d.quartile50
@@ -460,12 +464,24 @@ function changeBoxes(stock) {
     function(error, data2) {
       if (error) throw error;
       console.log(data2);
-      console.log(svg2);
+      //console.log(svg2);
+
+      //http://stackoverflow.com/questions/30874617/d3-max-didnt-get-the-correct-value
+      var max = d3.max(data2, function(d) { return d.mmax; });
+      var min = d3.min(data2, function(d) { return d.mmin; });
+
+      chart2.domain([min, max]);
+
+
+      console.log("MAX MIN");
+      console.log(max);
+      console.log(min);
+
       var all = d3.select("#chartBox").selectAll('svg');
       var i = 0;
       all[0].forEach(function(subelement) {
-        console.log(svg2);
-        console.log(subelement);
+        //console.log(svg2);
+        //console.log(subelement);
         var d3s = d3.select(subelement);
         d3s.datum(data2[i]).call(chart2.duration(1000))
         i++;
