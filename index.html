@@ -126,15 +126,15 @@
 <script type="text/javascript">
 
 
-// TODO destacar en click
 // TODO mostrar meses en box chart
 // TODO cap 103 no se muestra
 // TODO mostrar destacado mes seleccionado en box chart
 
 // TODO mostrar decimales en box chart
-// TODO tooltip mostrar menos decimales
 // TODO tooltip para informar como usar informacion
 // TODO boton reiniciar?
+
+var click = false;
 
 var margin = { top: 150, right: 10, bottom: 50, left: 100 },
   cellSize=20;
@@ -224,17 +224,11 @@ function(error, data) {
         .attr("height", cellSize)
         .attr("id", function(d) { return "stock"+d.row;})
         .style("fill", function(d) { return colorScale(d.value); })
-        /* .on("click", function(d) {
-               var rowtext=d3.select(".r"+(d.row-1));
-               if(rowtext.classed("text-selected")==false){
-                   rowtext.classed("text-selected",true);
-               }else{
-                   rowtext.classed("text-selected",false);
-               }
-        })*/
+        .on("mousedown", function(d) {
+          changeBoxes(rowLabel[d.row-1]);
+        })
         .on("mouseover", function(d){
                //highlight text
-               d3.select(this).classed("cell-hover",true);
                d3.selectAll(".rowLabel").classed("text-highlight",function(r,ri){ return ri==(d.row-1);});
                d3.selectAll(".colLabel").classed("text-highlight",function(c,ci){ return ci==(d.col-1);});
 
@@ -251,14 +245,16 @@ function(error, data) {
                //Show the tooltip
                d3.select("#tooltip").classed("hidden", false);
 
-               changeBoxes(rowLabel[d.row-1]);
+               
         })
         .on("mouseout", function(d){
+          if (!click) {
                d3.selectAll("#stock"+d.row).classed("cell-hover",false);
                d3.selectAll(".rowLabel").classed("text-highlight",false);
                d3.selectAll(".colLabel").classed("text-highlight",false);
                d3.select("#tooltip").classed("hidden", true);
                d3.selectAll(".cell").style("opacity",1);
+             }
         });
 
   var legend = svg.selectAll(".legend")
@@ -516,6 +512,13 @@ function truncateDecimals (num, digits) {
 
     return parseFloat(finalResult);
 }
+
+document.addEventListener("mousedown", function(event) {
+  click = true;
+})
+document.addEventListener("mouseup", function(event) {
+  click = false;
+})
 
   
 
