@@ -1,5 +1,16 @@
 (function() {
 
+
+function truncateDecimals (num, digits) {
+    var numS = num.toString(),
+        decPos = numS.indexOf('.'),
+        substrLength = decPos == -1 ? numS.length : 1 + decPos + digits,
+        trimmedResult = numS.substr(0, substrLength),
+        finalResult = isNaN(trimmedResult) ? 0 : trimmedResult;
+
+    return parseFloat(finalResult);
+}
+
 // TODO nombre letra del mes arriba de cada box
 
 // Inspired by http://informationandvisualization.de/blog/box-plot
@@ -149,8 +160,8 @@ d3.box = function() {
 
 
       // Compute the tick format.
-      var format = tickFormat || x1.tickFormat(8);
-
+      //var format = tickFormat || x1.tickFormat(8);
+      var format = function(x) { return truncateDecimals(x, 1)};
       // Update box ticks.
       var boxTick = d3select.selectAll("text.box")
           .data(quartileData);
@@ -168,6 +179,7 @@ d3.box = function() {
           .duration(duration)
           .attr("y", x1);
 
+      console.log(format(1.5))
       boxTick.transition()
           .duration(duration)
           //.text(d.quantileMiddle)

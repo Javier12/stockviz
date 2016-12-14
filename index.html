@@ -118,7 +118,7 @@
   <div id="boxTitle" style="font-family: Copperplate,Copperplate Gothic Light,fantasy;text-align: center; margin-top: 35px">
     AESGENER
   </div>
-  <div id="chartBox" style="margin: 0 auto;width:850px"></div>
+  <div id="chartBox" style="margin: 0 auto;width:1050px"></div>
 </div>
 
 
@@ -128,11 +128,8 @@
 
 // TODO mostrar meses en box chart
 // TODO cap 103 no se muestra
-// TODO mostrar destacado mes seleccionado en box chart
-
 // TODO mostrar decimales en box chart
-// TODO tooltip para informar como usar informacion
-// TODO boton reiniciar?
+// TODO agregar tres frases inidicatorias con link a reiniciar
 
 var click = false;
 
@@ -446,7 +443,7 @@ d3.tsv("data_AESGENER.tsv", function(d) {
       .data(data)
     .enter().append("svg")
       .attr("class", "box")
-      .attr("width", 10 + margin2.left + margin2.right)
+      .attr("width", 25 + margin2.left + margin2.right)
       .attr("height", height + margin2.bottom + margin2.top)
     .append("g")
       .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
@@ -485,10 +482,6 @@ function changeBoxes(stock) {
 
       chart2.domain([min, max]);
 
-
-      console.log("MAX MIN");
-      console.log(max);
-      console.log(min);
 
       var all = d3.select("#chartBox").selectAll('svg');
       var i = 0;
