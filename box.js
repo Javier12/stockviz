@@ -11,7 +11,6 @@ function truncateDecimals (num, digits) {
     return parseFloat(finalResult);
 }
 
-// TODO nombre letra del mes arriba de cada box
 
 // Inspired by http://informationandvisualization.de/blog/box-plot
 d3.box = function() {
