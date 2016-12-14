@@ -100,6 +100,15 @@
         stroke: #ccc;
       }
 
+      .mcenter {
+        margin: 0 auto;
+      }
+
+      .month {
+        text-align: center;
+        font: 17px Copperplate,Copperplate Gothic Light;
+      }
+
     </style>
 
 </head>
@@ -127,9 +136,9 @@
   </div>
   <div id="chart" style='overflow:auto;margin: 0 auto;width: 750px'></div>
   <div id="boxTitle" style="font-family: Copperplate,Copperplate Gothic Light,fantasy;text-align: center; margin-top: 35px">
-    AESGENER
+    <h2>AESGENER</h2>
   </div>
-  <div id="chartBox" style="margin: 0 auto;width:1050px"></div>
+  <div id="chartBox" style="margin: 0 auto;width:1050px;"></div>
 </div>
 
 
@@ -269,7 +278,7 @@ function(error, data) {
       .attr("class", "legend");
  
   legend.append("rect")
-    .attr("x", function(d, i) { return legendElementWidth * i; })
+    .attr("x", function(d, i) { return legendElementWidth * i + 30; })
     .attr("y", height+(cellSize*2))
     .attr("width", legendElementWidth)
     .attr("height", cellSize)
@@ -279,7 +288,7 @@ function(error, data) {
     .attr("class", "mono")
     .text(function(d) { return d; })
     .attr("width", legendElementWidth)
-    .attr("x", function(d, i) { return legendElementWidth * i + 5; })
+    .attr("x", function(d, i) { return legendElementWidth * i + 5 + 30; })
     .attr("y", height + (cellSize) + 15);
 
   function sortbylabel(rORc,i,sortOrder){
@@ -414,7 +423,7 @@ function(error, data) {
  */
 // TODO annadir decimales
 
-var margin2 = {top: 200, right: 30, bottom: 20, left: 30},
+var margin2 = {top: 50, right: 30, bottom: 20, left: 30},
     width2 = 80 - margin2.left - margin2.right,
     height2 = 700 - margin2.top - margin2.bottom;
 
@@ -446,17 +455,63 @@ d3.tsv("data_AESGENER.tsv", function(d) {
 
   var svg2 = d3.select("#chartBox");
 
-      
+  console.log(data)
 
   var allBoxes = svg2.selectAll()
       .data(data)
     .enter().append("svg")
-      .attr("class", "box")
+      .attr("class", "box mbox")
       .attr("width", 25 + margin2.left + margin2.right)
-      .attr("height", height + margin2.bottom + margin2.top)
-    .append("g")
+      .attr("height", height2 + margin2.bottom + margin2.top)
+      .attr("id", function(d) {return "mbox" + d.col})
+      .on("mouseover", function(d){
+          console.log("Mouseover")   
+          d3.selectAll(".mbox").style("opacity",0.30);
+          d3.selectAll("#mbox"+d.col).style("opacity",1);
+        })
+      .on("mouseout", function(d){
+          d3.selectAll(".mbox").style("opacity", 1);
+      });
+
+  
+  var innerBoxes = allBoxes.append("g")
       .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")")
       .call(chart2)
+
+
+  innerBoxes.append("text").text(function(d) {
+    console.log(d);
+    switch (d.col) {
+        case "1":
+          return "ENE"
+        case "2":
+          return "FEB"
+        case "3":
+          return "MAR"
+        case "4":
+          return "ABR"
+        case "5":
+          return "MAY"
+        case "6":
+          return "JUN"
+        case "7":
+          return "JUL"
+        case "8":
+          return "AGO"
+        case "9":
+          return "SEP"
+        case "10":
+          return "OCT"
+        case "11":
+          return "NOV"
+        case "12":
+          return "DIC"
+    }
+  }).attr("class", "month").attr("dy", -10)
+
+
+  console.log("ALL");
+  console.log(allBoxes);
 
 
 
@@ -465,7 +520,7 @@ d3.tsv("data_AESGENER.tsv", function(d) {
 
 
 function changeBoxes(stock) {
-  document.getElementById("boxTitle").innerHTML = stock;
+  document.getElementById("boxTitle").innerHTML = "<h2>" + stock + "</h2>";
   var svg2 = d3.select("#chartBox");
   d3.tsv("data_" + stock +".tsv", function(d) {
     return {

@@ -26,6 +26,10 @@ d3.box = function() {
 
   // For each small multiple…
   function box(g) {
+
+    console.log("G");
+    console.log(g);
+
     g.each(function(d, i) {
       var min = d.whiskerDown,
           max = d.whiskerUp;
