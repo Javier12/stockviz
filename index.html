@@ -270,16 +270,17 @@ function(error, data) {
         });
 
   var legend = svg.selectAll(".legend")
-      .data(['4%>','','','','','','','','','','0','','','','','','','','','<-4%'])
+      .data(['-4%<','','','','','','','','','','0','','','','','','','','','>4%'])
       .enter().append("g")
       .attr("class", "legend");
  
+  var reversedColorLegend = colorLegend.reverse();
   legend.append("rect")
     .attr("x", function(d, i) { return legendElementWidth * i + 30; })
     .attr("y", height+(cellSize*2))
     .attr("width", legendElementWidth)
     .attr("height", cellSize)
-    .style("fill", function(d, i) { return colorLegend[i]; });
+    .style("fill", function(d, i) { return reversedColorLegend[i]; });
  
   legend.append("text")
     .attr("class", "mono")
